@@ -73,6 +73,7 @@
     <Compile Include="VMDT\DefMod_VMDT.cs" />
     <Compile Include="VMDT\DefOf_VMDT.cs" />
     <Compile Include="VMDT\ModSettings_VMDT.cs" />
+    <Compile Include="VMDT\ModSettings_Utility.cs" />
     <Compile Include="VMDT\Mod_VMDT.cs" />
     <Compile Include="Food Changes\FoodSelection.cs" />
     <Compile Include="MealTime\MealTimeJoy.cs" />
@@ -81,7 +82,7 @@
     <Compile Include="Food Changes\PackRawFoods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Food Changes\VanillaFoodThoughts.cs" />
-    <Compile Include="VMDT\Component_VMDT.cs" />
+    <Compile Include="VMDT\Startup_VMDT.cs" />
     <Compile Include="VMDT\UpdateDef.cs" />
   </ItemGroup>
   <ItemGroup />

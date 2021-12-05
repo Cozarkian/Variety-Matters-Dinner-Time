@@ -1,10 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace VarietyMattersDT
 {
     public class ModSettings_VMDT : ModSettings
     {
+        //Tables Are For Meals
+        public static Dictionary<string, int> tablelessMeals = new Dictionary<string, int>();
+        public static Dictionary<string, int> tablelessFoods = new Dictionary<string, int>();
+
         //Meal Time
         public static float assignmentPos = 0;
 
@@ -35,6 +40,10 @@ namespace VarietyMattersDT
 
         public override void ExposeData()
         {
+            //Tables Are For Meals
+            Scribe_Collections.Look<string, int>(ref ModSettings_VMDT.tablelessMeals, "tablelessMeals");
+            Scribe_Collections.Look<string, int>(ref ModSettings_VMDT.tablelessFoods, "tablelessFoods");
+
             Scribe_Values.Look(ref assignmentPos, "foodPos", 0);
             Scribe_Values.Look(ref preferDiningFood, "preferDiningFood", true);
             Scribe_Values.Look(ref preferSpoiling, "preferSpoiling", true);

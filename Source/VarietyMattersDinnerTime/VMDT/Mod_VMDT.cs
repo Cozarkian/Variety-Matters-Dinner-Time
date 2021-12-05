@@ -1,4 +1,6 @@
-﻿using System.Reflection;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using RimWorld;
 using Verse;
@@ -9,11 +11,15 @@ namespace VarietyMattersDT
 {
     public class Mod_VMDT : Mod
     {
-        Listing_Standard listingStandard = new Listing_Standard();
+        private static Listing_Standard listing = new Listing_Standard();
+        public static ModSettings_VMDT settings;
+        private static int currentTab;
+        private static Vector2 mealScrollPos = Vector2.zero;
+        private static Vector2 foodScrollPos = Vector2.zero;
 
         public Mod_VMDT(ModContentPack content) : base(content)
         {
-            GetSettings<ModSettings_VMDT>();
+            settings = GetSettings<ModSettings_VMDT>();
             if (ModSettings_VMDT.freshUpdate < 1) ModSettings_VMDT.freshUpdate++;
             WriteSettings();
             Harmony harmony = new Harmony("rimworld.varietymattersDT");
@@ -25,98 +31,179 @@ namespace VarietyMattersDT
             return "VarietyMattersDinnerTime";
         }
 
+        public override void WriteSettings()
+        {
+            //DefMod_VMDT.UpdateDefMods();
+            base.WriteSettings();
+        }
+
         public override void DoSettingsWindowContents(Rect inRect)
         {
-            Rect rect = new Rect(100f, 50f, inRect.width * .8f, inRect.height);
+            base.DoSettingsWindowContents(inRect);
+            Rect canvas = new Rect(inRect.x, inRect.y + 30f, inRect.width, inRect.height - 30f);
+            Widgets.DrawMenuSection(canvas);
+            List<TabRecord> tabs = new List<TabRecord>
+            {
+                new TabRecord("VMDT.Tab0".Translate(), delegate()
+                {
+                    currentTab = 0;
+                },  currentTab == 0),
+                new TabRecord("VMDT.Tab1".Translate(), delegate()
+                {
+                    currentTab = 1;
+                }, currentTab == 1),
+            };
+            TabDrawer.DrawTabs(canvas, tabs, 200f);
+            if (currentTab == 0) DoMainSettings(canvas);
+            if (currentTab == 1) DoTablelessFoods(canvas);
+        }
 
-            listingStandard.Begin(rect);
+        public static void DoMainSettings(Rect rect)
+        {
+            listing.Begin(rect.ContractedBy(15f));
             //Meal Time
-            listingStandard.Label("Meal Time:");
+            Text.Anchor = TextAnchor.MiddleCenter;
+            listing.Label("VMDT.MealTimeLabel".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+            listing.Indent();
             string foodPosBuffer = ModSettings_VMDT.assignmentPos.ToString();
-            string foodPosLabel = "Move food schedule assignment selector x spaces to the right:";
-            LabeledFloatEntry(this.listingStandard.GetRect(24f), foodPosLabel, ref ModSettings_VMDT.assignmentPos, ref foodPosBuffer, 1f, 1f, 0f, 4f);
-            listingStandard.GapLine();
+            string foodPosLabel = "VMDT.MealTimePos".Translate();
+            ModSettings_Utility.LabeledFloatEntry(listing.GetRect(24f), foodPosLabel, ref ModSettings_VMDT.assignmentPos, ref foodPosBuffer, 1f, 1f, 0f, 4f);
+            listing.Outdent();
+            listing.GapLine();
             //Food Selection
-            listingStandard.Label("Food Selection:");
-            listingStandard.CheckboxLabeled("Prefer food in dining room, hospital, or prison: ", ref ModSettings_VMDT.preferDiningFood);
-            listingStandard.CheckboxLabeled("Prefer food close to spoiling: ", ref ModSettings_VMDT.preferSpoiling);
-            listingStandard.GapLine();
-            //Food Thoughts
-            listingStandard.Label("Tables Are For Meals:");
-            listingStandard.CheckboxLabeled("Tables are optional for pemmican, fruit and certain non-meals: ", ref ModSettings_VMDT.foodsWithoutTable);
-            listingStandard.CheckboxLabeled("Ate without table thought lasts longer and stacks: ", ref ModSettings_VMDT.useTableThought);
-            //listingStandard.CheckboxLabeled("Fine meal thought lasts longer and stacks", ref ModSettings_VMDT.longerFine);
-            listingStandard.GapLine();
+            Text.Anchor = TextAnchor.MiddleCenter;
+            listing.Label("VMDT.FoodSelectionLabel".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+            listing.Indent();
+            ModSettings_Utility.IndentedCheckboxLabeled(listing, "VMDT.RoomFood".Translate(), ref ModSettings_VMDT.preferDiningFood);
+            ModSettings_Utility.IndentedCheckboxLabeled(listing,"VMDT.Spoiling".Translate(), ref ModSettings_VMDT.preferSpoiling);
+            listing.Outdent();
+            listing.GapLine();
+
             //Quality Cooking
-            listingStandard.Label("Quality  Cooking:");
-            listingStandard.CheckboxLabeled("Unskilled chefs may cook meals poorly", ref ModSettings_VMDT.cookingQuality);
-            listingStandard.CheckboxLabeled("Lavish meals are memorable:", ref ModSettings_VMDT.memorableLavish);
-            listingStandard.GapLine();
+            Text.Anchor = TextAnchor.MiddleCenter;
+            listing.Label("VMDT.QualityLabel".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+            listing.Indent();
+            ModSettings_Utility.IndentedCheckboxLabeled(listing,"VMDT.QualityToggle".Translate(), ref ModSettings_VMDT.cookingQuality);
+            ModSettings_Utility.IndentedCheckboxLabeled(listing,"VMDT.LavishThought".Translate(), ref ModSettings_VMDT.memorableLavish);
+            listing.Outdent();
+            listing.GapLine();
             //FreshlyCooked
-            listingStandard.Label("Freshly Cooked:");
-            listingStandard.CheckboxLabeled("Hot meals taste better", ref ModSettings_VMDT.warmMeals);
-            listingStandard.CheckboxLabeled("Leftovers taste worse", ref ModSettings_VMDT.leftoverMeals);
-            listingStandard.CheckboxLabeled("Frozen leftovers taste the worst", ref ModSettings_VMDT.frozenMeals);
+            Text.Anchor = TextAnchor.MiddleCenter;
+            listing.Label("VMDT.FreshLabel".Translate());
+            Text.Anchor = TextAnchor.UpperLeft;
+            listing.Indent();
+            ModSettings_Utility.IndentedCheckboxLabeled(listing,"VMDT.Hot".Translate(), ref ModSettings_VMDT.warmMeals);
+            ModSettings_Utility.IndentedCheckboxLabeled(listing,"VMDT.Leftovers".Translate(), ref ModSettings_VMDT.leftoverMeals);
+            ModSettings_Utility.IndentedCheckboxLabeled(listing,"VMDT.Frozen".Translate(), ref ModSettings_VMDT.frozenMeals);
             if (ModSettings_VMDT.warmMeals)
             {
-                string warmLabel = "Hours to stay warm if not refrigerated (default = 20):";
+                string warmLabel = "VMDT.WarmHours".Translate();
                 string warmBuffer = ModSettings_VMDT.warmHours.ToString();
-                LabeledFloatEntry(listingStandard.GetRect(24f), warmLabel, ref ModSettings_VMDT.warmHours, ref warmBuffer, 1f, 5f, 1f, 72f);
+                ModSettings_Utility.LabeledFloatEntry(listing.GetRect(24f), warmLabel, ref ModSettings_VMDT.warmHours, ref warmBuffer, 1f, 5f, 1f, 72f);
             }
             if (ModSettings_VMDT.leftoverMeals)
             {
-                string leftoverLabel = "Hours to become leftovers if not refrigerated (default = 40):";
+                string leftoverLabel = "VMDT.RefrigHours".Translate();
                 string leftoverBuffer = ModSettings_VMDT.leftoverHours.ToString();
-                LabeledFloatEntry(listingStandard.GetRect(24f), leftoverLabel, ref ModSettings_VMDT.leftoverHours, ref leftoverBuffer, 1f, 10f, ModSettings_VMDT.warmHours, 72f);
+                ModSettings_Utility.LabeledFloatEntry(listing.GetRect(24f), leftoverLabel, ref ModSettings_VMDT.leftoverHours, ref leftoverBuffer, 1f, 10f, ModSettings_VMDT.warmHours, 72f);
             }
             if (ModSettings_VMDT.warmMeals || ModSettings_VMDT.leftoverMeals)
             {
-                string refrigLabel = "Refrigerated Meal Multiplier (1x = no multiplier; default = 2x):";
+                string refrigLabel = "VMDT.RefrigMulti".Translate();
                 string refrigBuffer = ModSettings_VMDT.refrigMulti.ToString();
-                LabeledFloatEntry(this.listingStandard.GetRect(24f), refrigLabel, ref ModSettings_VMDT.refrigMulti, ref refrigBuffer, .1f, 1f, 1f, 10f);
-                string freshTempLabel = "Minimum stay-warm temperatue (default = 60)";
+                ModSettings_Utility.LabeledFloatEntry(listing.GetRect(24f), refrigLabel, ref ModSettings_VMDT.refrigMulti, ref refrigBuffer, .1f, 1f, 1f, 10f);
+                string freshTempLabel = "VMDT.WarmTemp".Translate();
                 string freshTempBuffer = ModSettings_VMDT.minFreshTemp.ToString();
-                LabeledFloatEntry(this.listingStandard.GetRect(24f), freshTempLabel, ref ModSettings_VMDT.minFreshTemp, ref freshTempBuffer, 1f, 10f, 1f, 100f);
+                ModSettings_Utility.LabeledFloatEntry(listing.GetRect(24f), freshTempLabel, ref ModSettings_VMDT.minFreshTemp, ref freshTempBuffer, 1f, 10f, 1f, 100f);
             }
-            listingStandard.End();
-            base.DoSettingsWindowContents(inRect);
+            listing.Outdent();
+            listing.End();
         }
-        public void LabeledFloatEntry(Rect rect, string label, ref float value, ref string editBuffer, float multiplier, float largeMultiplier, float min, float max)
-        {
-            int num = (int)rect.width / 15;
-            Widgets.Label(rect, label);
-            if (multiplier != largeMultiplier)
-            {
-                if (Widgets.ButtonText(new Rect(rect.xMax - (float)num * 5, rect.yMin, (float)num, rect.height), (-1 * largeMultiplier).ToString(), true, true, true))
-                {
-                    value -= largeMultiplier * GenUI.CurrentAdjustmentMultiplier();
-                    editBuffer = value.ToString();
-                    SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera(null);
-                }
-                if (Widgets.ButtonText(new Rect(rect.xMax - (float)num, rect.yMin, (float)num, rect.height), "+" + largeMultiplier.ToString(), true, true, true))
-                {
-                    value += largeMultiplier * multiplier * GenUI.CurrentAdjustmentMultiplier();
-                    editBuffer = value.ToString();
-                    SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera(null);
-                }
-            }
-            if (Widgets.ButtonText(new Rect(rect.xMax - (float)num * 4, rect.yMin, (float)num, rect.height), (-1 * multiplier).ToString(), true, true, true))
-            {
-                value -= GenUI.CurrentAdjustmentMultiplier();
-                editBuffer = value.ToString();
-                SoundDefOf.Checkbox_TurnedOff.PlayOneShotOnCamera(null);
-            }
-            if (Widgets.ButtonText(new Rect(rect.xMax - (float)(num * 2), rect.yMin, (float)num, rect.height), "+" + multiplier.ToString(), true, true, true))
-            {
-                value += multiplier * GenUI.CurrentAdjustmentMultiplier();
-                editBuffer = value.ToString();
-                SoundDefOf.Checkbox_TurnedOn.PlayOneShotOnCamera(null);
-            }
-            Widgets.TextFieldNumeric<float>(new Rect(rect.xMax - (float)(num * 3), rect.yMin, (float)num, rect.height), ref value, ref editBuffer, min, max);
-        }
-        
-        /*
 
-        */
+        public static void DoTablelessFoods(Rect rect)
+        {
+            List<string> meals = ModSettings_VMDT.tablelessMeals.Keys.ToList();
+            List<string> foods = ModSettings_VMDT.tablelessFoods.Keys.ToList();
+
+            Rect firstCol = new Rect(rect.x + 5f, rect.y + 5f, rect.width * .48f, rect.height);
+            listing.Begin(firstCol);
+            listing.CheckboxLabeled("VMDT.TablesToggle".Translate(), ref ModSettings_VMDT.foodsWithoutTable);
+            listing.GapLine();
+            if (ModSettings_VMDT.foodsWithoutTable)
+            {
+                Text.Anchor = TextAnchor.MiddleCenter;
+                listing.Label("Meals:");
+                Text.Anchor = TextAnchor.UpperLeft;
+                Rect mealScroll = new Rect(0f, listing.CurHeight, firstCol.width, rect.height - listing.CurHeight - 10f);
+                Rect mealView = new Rect(0f, 0f, mealScroll.width - 20f, meals.Count * 24f);
+                Widgets.BeginScrollView(mealScroll, ref mealScrollPos, mealView, true);
+                listing.Begin(mealView);
+                meals.Sort();
+                foreach (string meal in meals)
+                {
+                    int value = ModSettings_VMDT.tablelessMeals[meal];
+                    string label = "VMDT.TableReq".Translate();
+                    if (value == 1)
+                    {
+                        label = ColoredText.Colorize("VMDT.Tableless".Translate(), Color.cyan);
+                    }
+                    if (value == 2)
+                    {
+                        label = ColoredText.Colorize("VMDT.Packable".Translate(), Color.green);
+                    }
+                    if (listing.ButtonTextLabeled(meal, label))
+                    {
+                        if (value == 2) value = 0;
+                        else value += 1;
+                        DefMod_VMDT.AddOrRemove(meal, value);
+                        ModSettings_VMDT.tablelessMeals[meal] = value;
+                    }
+                }
+                listing.End();
+                Widgets.EndScrollView();
+            }
+            listing.End();
+
+            Rect secCol = new Rect(rect.width * .5f + 5f, rect.y + 5f, rect.width * .48f, rect.height);
+            listing.Begin(secCol);
+            listing.CheckboxLabeled("VMDT.TablesThought".Translate(), ref ModSettings_VMDT.useTableThought); 
+            listing.GapLine();
+            if (ModSettings_VMDT.foodsWithoutTable)
+            {
+                Text.Anchor = TextAnchor.MiddleCenter;
+                listing.Label("Other Foods:");
+                Text.Anchor = TextAnchor.UpperLeft;
+                Rect foodScroll = new Rect(0f, listing.CurHeight, secCol.width, rect.height - listing.CurHeight - 10f);
+                Rect foodView = new Rect(0f, 0f, foodScroll.width - 20f, foods.Count * 24f);
+                Widgets.BeginScrollView(foodScroll, ref foodScrollPos, foodView, true);
+                listing.Begin(foodView);
+                foreach (string food in foods)
+                {
+                    int value = ModSettings_VMDT.tablelessFoods[food];
+                    string label = "VMDT.TableReq".Translate();
+                    if (value == 1)
+                    {
+                        label = ColoredText.Colorize("VMDT.Tableless".Translate(), Color.cyan);
+                    }
+                    if (value == 2)
+                    {
+                        label = ColoredText.Colorize("VMDT.Packable".Translate(), Color.green);
+                    }
+                    if (listing.ButtonTextLabeled(food, label))
+                    {
+                        if (value == 2) value = 0;
+                        else value += 1;
+                        DefMod_VMDT.AddOrRemove(food, value);
+                        ModSettings_VMDT.tablelessFoods[food] = value;
+                    }
+                }
+                listing.End();
+                Widgets.EndScrollView();
+            }
+            listing.End();
+        }
     }
 }
