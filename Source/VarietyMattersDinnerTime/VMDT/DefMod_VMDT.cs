@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using RimWorld;
 using Verse;
 
 namespace VarietyMattersDT
@@ -16,13 +14,13 @@ namespace VarietyMattersDT
             ThingDef def = DefDatabase<ThingDef>.GetNamed(name);
             if (value == 0)
             {
-                if (def.HasModExtension<VarietyMattersDT.DefMod_VMDT>())
+                if (def.HasModExtension<DefMod_VMDT>())
                 {
-                    mod = def.GetModExtension<VarietyMattersDT.DefMod_VMDT>();
+                    mod = def.GetModExtension<DefMod_VMDT>();
                     def.modExtensions.Remove(mod);
                 }
             }
-            else if (!def.HasModExtension<VarietyMattersDT.DefMod_VMDT>())
+            else if (!def.HasModExtension<DefMod_VMDT>())
             {
                 if (def.modExtensions == null) def.modExtensions = new List<DefModExtension>();
                 mod = new VarietyMattersDT.DefMod_VMDT();
@@ -31,7 +29,7 @@ namespace VarietyMattersDT
             }
             else
             {
-                mod = def.GetModExtension<VarietyMattersDT.DefMod_VMDT>();
+                mod = def.GetModExtension<DefMod_VMDT>();
                 if (value == 1) mod.packBonus = 25;
                 else mod.packBonus = 58;
             }

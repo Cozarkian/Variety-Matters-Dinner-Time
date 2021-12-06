@@ -7,3 +7,4 @@ P:\SteamLibrary\steamapps\common\RimWorld\Mods\VarietyMattersDinnerTime\Source\V
 P:\SteamLibrary\steamapps\common\RimWorld\Mods\VarietyMattersDinnerTime\Source\VarietyMattersDinnerTime\obj\Debug\VarietyMattersDT.csproj.CoreCompileInputs.cache
 P:\SteamLibrary\steamapps\common\RimWorld\Mods\VarietyMattersDinnerTime\Source\VarietyMattersDinnerTime\obj\Debug\VarietyMattersDT.dll
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\VarietyMattersDinnerTime\1.3\Assemblies\VarietyMattersDT.dll
+P:\SteamLibrary\steamapps\common\RimWorld\Mods\VarietyMattersDinnerTime\1.3\Assemblies\VarietyMattersDT.dll

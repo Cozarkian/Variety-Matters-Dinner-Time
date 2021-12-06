@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using RimWorld;
 using Verse;
-using Verse.Sound;
 using HarmonyLib;
 
 namespace VarietyMattersDT
@@ -33,7 +31,6 @@ namespace VarietyMattersDT
 
         public override void WriteSettings()
         {
-            //DefMod_VMDT.UpdateDefMods();
             base.WriteSettings();
         }
 
@@ -131,6 +128,7 @@ namespace VarietyMattersDT
             Rect firstCol = new Rect(rect.x + 5f, rect.y + 5f, rect.width * .48f, rect.height);
             listing.Begin(firstCol);
             listing.CheckboxLabeled("VMDT.TablesToggle".Translate(), ref ModSettings_VMDT.foodsWithoutTable);
+            listing.Gap(24f);
             listing.GapLine();
             if (ModSettings_VMDT.foodsWithoutTable)
             {
@@ -138,7 +136,7 @@ namespace VarietyMattersDT
                 listing.Label("Meals:");
                 Text.Anchor = TextAnchor.UpperLeft;
                 Rect mealScroll = new Rect(0f, listing.CurHeight, firstCol.width, rect.height - listing.CurHeight - 10f);
-                Rect mealView = new Rect(0f, 0f, mealScroll.width - 20f, meals.Count * 24f);
+                Rect mealView = new Rect(0f, 0f, mealScroll.width - 20f, meals.Count * 32f);
                 Widgets.BeginScrollView(mealScroll, ref mealScrollPos, mealView, true);
                 listing.Begin(mealView);
                 meals.Sort();
@@ -169,7 +167,8 @@ namespace VarietyMattersDT
 
             Rect secCol = new Rect(rect.width * .5f + 5f, rect.y + 5f, rect.width * .48f, rect.height);
             listing.Begin(secCol);
-            listing.CheckboxLabeled("VMDT.TablesThought".Translate(), ref ModSettings_VMDT.useTableThought); 
+            listing.CheckboxLabeled("VMDT.TablesThought".Translate(), ref ModSettings_VMDT.useTableThought);
+            listing.Gap(24f);
             listing.GapLine();
             if (ModSettings_VMDT.foodsWithoutTable)
             {
@@ -177,7 +176,7 @@ namespace VarietyMattersDT
                 listing.Label("Other Foods:");
                 Text.Anchor = TextAnchor.UpperLeft;
                 Rect foodScroll = new Rect(0f, listing.CurHeight, secCol.width, rect.height - listing.CurHeight - 10f);
-                Rect foodView = new Rect(0f, 0f, foodScroll.width - 20f, foods.Count * 24f);
+                Rect foodView = new Rect(0f, 0f, foodScroll.width - 20f, foods.Count * 32f);
                 Widgets.BeginScrollView(foodScroll, ref foodScrollPos, foodView, true);
                 listing.Begin(foodView);
                 foreach (string food in foods)

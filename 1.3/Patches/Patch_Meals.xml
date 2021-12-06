@@ -9,27 +9,4 @@
 			</li>
 		</value>
 	</Operation>
-	
-	<Operation Class="PatchOperationSequence">
-		<operations>
-			<li Class="PatchOperationReplace">
-				<xpath>Defs/RecipeDef[defName="CookMealSurvival"]/ingredients/li[1]/count</xpath>
-					<value>
-						<count>0.25</count>
-					</value>
-			</li>
-			<li Class="PatchOperationReplace">
-				<xpath>Defs/RecipeDef[defName="CookMealSurvivalBulk"]/ingredients/li[1]/count</xpath>
-					<value>
-						<count>1.10</count>
-					</value>
-			</li>
-			<li Class="PatchOperationReplace">
-				<xpath>Defs/RecipeDef[defName="CookMealSurvivalBulk"]/ingredients/li[2]/count</xpath>
-					<value>
-						<count>1.10</count>
-					</value>
-			</li>
-		</operations>
-	</Operation>
 </Patch>

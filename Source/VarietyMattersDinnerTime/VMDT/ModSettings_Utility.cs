@@ -1,9 +1,7 @@
-﻿using System.Reflection;
-using UnityEngine;
+﻿using UnityEngine;
 using RimWorld;
 using Verse;
 using Verse.Sound;
-using HarmonyLib;
 
 namespace VarietyMattersDT
 {

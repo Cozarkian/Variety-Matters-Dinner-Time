@@ -15,7 +15,7 @@
 
 	<VMDT.TablesToggle>Not all food requires a table:</VMDT.TablesToggle>
 	<VMDT.TablesThought>Eating without a table is memorable (lasts longer and stacks): </VMDT.TablesThought>
-	<VMDT.TablesApply>Apply Changes</VMDT.TablesApply>
+	<VMDT.SurvivalMeal>Improved packaged survival meal</VMDT.SurvivalMeal>
 	<VMDT.TableReq>Normal</VMDT.TableReq>
 	<VMDT.Tableless>No Table Required</VMDT.Tableless>
 	<VMDT.Packable>Travel Food</VMDT.Packable>

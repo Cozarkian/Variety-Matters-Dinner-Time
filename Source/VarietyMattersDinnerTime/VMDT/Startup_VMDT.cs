@@ -22,7 +22,6 @@ namespace VarietyMattersDT
                 RemoveOldDefs();
                 UpdateDefMods();
             }
-                //UpdateDef.DisplayUpdate();
         }
 
         public static void UpdateDefMods()
@@ -30,7 +29,7 @@ namespace VarietyMattersDT
             bool newFoods = false;
             int value;
             DefMod_VMDT mod = new DefMod_VMDT();
-            foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading.Where(x => x.IsNutritionGivingIngestible && x.ingestible.HumanEdible && x.ingestible.chairSearchRadius > 10f))
+            foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading.Where(x => x.IsNutritionGivingIngestible && x.ingestible.HumanEdible))
             {
                 if (ModSettings_VMDT.tablelessMeals.ContainsKey(def.defName))
                 {
@@ -94,7 +93,7 @@ namespace VarietyMattersDT
         {
             Log.Message("[VMDT] Detected new foods");
             List<ThingDef> list = new List<ThingDef>();
-            foreach (ThingDef food in DefDatabase<ThingDef>.AllDefsListForReading.Where(x => x.IsNutritionGivingIngestible && x.ingestible.HumanEdible && x.ingestible.chairSearchRadius > 10f))
+            foreach (ThingDef food in DefDatabase<ThingDef>.AllDefsListForReading.Where(x => x.IsNutritionGivingIngestible && x.ingestible.HumanEdible))
             {
                 if (food.ingestible.preferability >= FoodPreferability.MealAwful)
                 {
@@ -113,7 +112,7 @@ namespace VarietyMattersDT
                     list.Add(food);
                 }
             }
-            list.OrderBy(x => x.ingestible.foodType).ThenBy(x => x.defName);
+            list.OrderBy(x => x.ingestible.foodType);
             for (int i = 0; i < list.Count; i++)
             {
                 ThingDef food = list[i];
@@ -150,7 +149,7 @@ namespace VarietyMattersDT
                 }
                 i++;
             }
-            Log.Message("[VMDT] Done removing old defs");
+            //Log.Message("[VMDT] Done removing old defs");
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using UnityEngine;
 using Verse;
 
 namespace VarietyMattersDT
@@ -9,6 +8,8 @@ namespace VarietyMattersDT
         //Tables Are For Meals
         public static Dictionary<string, int> tablelessMeals = new Dictionary<string, int>();
         public static Dictionary<string, int> tablelessFoods = new Dictionary<string, int>();
+        public static bool foodsWithoutTable = false;
+        public static bool useTableThought = false;
 
         //Meal Time
         public static float assignmentPos = 0;
@@ -18,8 +19,6 @@ namespace VarietyMattersDT
         public static bool preferSpoiling = true;
 
         //Food Thoughts
-        public static bool foodsWithoutTable = false;
-        public static bool useTableThought = false;
         public static bool memorableLavish = false;
 
         //Cooking Quality
@@ -43,13 +42,14 @@ namespace VarietyMattersDT
             //Tables Are For Meals
             Scribe_Collections.Look<string, int>(ref ModSettings_VMDT.tablelessMeals, "tablelessMeals");
             Scribe_Collections.Look<string, int>(ref ModSettings_VMDT.tablelessFoods, "tablelessFoods");
+            Scribe_Values.Look(ref foodsWithoutTable, "foodsWithoutTable", false);
+            Scribe_Values.Look(ref useTableThought, "useTableThought", false);
 
             Scribe_Values.Look(ref assignmentPos, "foodPos", 0);
             Scribe_Values.Look(ref preferDiningFood, "preferDiningFood", true);
             Scribe_Values.Look(ref preferSpoiling, "preferSpoiling", true);
             //Food Thoughts
-            Scribe_Values.Look(ref foodsWithoutTable, "foodsWithoutTable", false);
-            Scribe_Values.Look(ref useTableThought, "useTableThought", false);
+
             Scribe_Values.Look(ref memorableLavish, "memorableLavish", false);
             //Scribe_Values.Look(ref longerFine, "longerLavish", false);
             //Cooking Quality
